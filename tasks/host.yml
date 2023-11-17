@@ -1,0 +1,47 @@
+---
+- name: "Deploy {{ domain }} host config"
+  template:
+    src: host.conf.j2
+    dest: "{{ nginx_root }}/conf.d/{{ domain }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  notify: Reload nginx
+
+- name: Check for SELinux port definition conflicts
+  shell:
+    cmd: "semanage port -l | grep ' tcp ' | grep -P ' {{ se_conflict_item }}(,| |$)' | awk '{print $1}'"
+  changed_when: false
+  failed_when: false
+  loop:
+    - "{{ eff_host_port }}"
+    - "{{ eff_proxy_port }}"
+  loop_control:
+    loop_var: se_conflict_item
+  register: se_conflict_check
+  when: (eff_proxy_port | string not in stock_http_cache_ports | string) or (eff_host_port | string not in stock_http_ports | string)
+
+- debug:
+    msg: "{% if se_conflict_output.stdout | length and se_conflict_output.stdout != 'http_port_t' and se_conflict_output.stdout != 'http_cache_port_t' %}Warning: port {{ se_conflict_output.se_conflict_item }} seems to conflict with the definition of '{{ se_conflict_output.stdout }}', module installation will likely fail.{% else %}No SELinux port conflict detected.{% endif %}"
+  loop: "{{ se_conflict_check.results }}"
+  loop_control:
+    loop_var: se_conflict_output
+    label: "{{ se_conflict_output.se_conflict_item }}"
+  when: not se_conflict_check.skipped
+
+- include_role:
+    name: noobient.selinux_cil
+  vars:
+    module: "noobient-nginx_{{ domain }}"
+    custom_src: noobient-nginx_custom
+  when: (eff_proxy_port | string not in stock_http_cache_ports | string) or (eff_host_port | string not in stock_http_ports | string)
+
+- name: "Enable {{ domain }} host"
+  file:
+    src: "{{ nginx_root }}/conf.d/{{ domain }}.conf"
+    dest: "{{ nginx_root }}/conf.d-enabled/{{ domain }}.conf"
+    state: link
+    owner: root
+    group: root
+  notify: Reload nginx

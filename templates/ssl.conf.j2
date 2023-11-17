@@ -1,0 +1,30 @@
+# check https://cipherli.st/ for updates
+# or https://developers.cloudflare.com/ssl/ssl-tls/cipher-suites
+ssl_protocols TLSv1.3;
+ssl_session_cache builtin:1000 shared:SSL:10m;
+ssl_prefer_server_ciphers on;
+#ssl_ciphers ECDHE-RSA-AES256-GCM-SHA51:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
+ssl_ciphers ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305;
+
+ssl_dhparam dh4096.pem;
+
+ssl_stapling on;
+ssl_stapling_verify on;
+resolver 1.1.1.1 1.0.0.1 [2606:4700:4700::1111] [2606:4700:4700::1001] valid=300s;
+resolver_timeout 30s;
+
+# make sure we don't send duplicate headers
+proxy_hide_header Strict-Transport-Securty;
+proxy_hide_header X-Content-Type-Options;
+proxy_hide_header X-XSS-Protection;
+proxy_hide_header Content-Security-Policy;
+proxy_hide_header Referrer-Policy;
+proxy_hide_header X-Frame-Options;
+
+# for preload, make sure to submit your root domain at https://hstspreload.org/
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload";
+add_header X-Content-Type-Options "nosniff";
+add_header X-XSS-Protection "1; mode=block";
+add_header Content-Security-Policy "default-src https: 'unsafe-inline' 'unsafe-eval'; connect-src https: wss:; img-src data: https://*";
+add_header Referrer-Policy "strict-origin-when-cross-origin";
+add_header X-Frame-Options "SAMEORIGIN";

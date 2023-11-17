@@ -1,0 +1,38 @@
+---
+# dsaparam: https://security.stackexchange.com/questions/95178/diffie-hellman-parameters-still-calculating-after-24-hours
+- name: Create dhparam file
+  command:
+    cmd: "openssl dhparam -dsaparam -out {{ nginx_root }}/dh4096.pem 4096"
+    creates: "{{ nginx_root }}/dh4096.pem"
+  notify: Reload nginx
+
+- name: Deploy nginx config files
+  template:
+    src: "{{ ng_conf_item }}.j2"
+    dest: "{{ nginx_root }}/{{ ng_conf_item }}"
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  loop:
+    - dos.conf
+    - nginx.conf
+    - php.conf
+    - ssl.conf
+  loop_control:
+    loop_var: ng_conf_item
+  notify: Reload nginx
+
+- name: Create enabled host folder
+  file:
+    path: "{{ nginx_root }}/conf.d-enabled"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- include_role:
+    name: noobient.selinux_cil
+  vars:
+    module: noobient-nginx
+  register: noobient_nginx_configured

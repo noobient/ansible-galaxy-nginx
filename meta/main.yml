@@ -1,0 +1,9 @@
+---
+galaxy_info:
+  role_name: nginx
+  author: Viktor Berke
+  description: Install and configure nginx
+  license: license (MIT)
+  min_ansible_version: '2.10'
+  platforms: []
+  galaxy_tags: []

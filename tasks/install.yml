@@ -1,0 +1,15 @@
+---
+- name: Install nginx and OpenSSL
+  package:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+      - nginx
+      - openssl
+
+- name: Enable nginx service
+  systemd:
+    name: nginx.service
+    enabled: true
+  register: noobient_nginx_installed

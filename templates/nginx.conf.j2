@@ -1,0 +1,52 @@
+# avoid root, it's unnecessary
+user                            {% if ansible_pkg_mgr == 'dnf' %}nginx{% else %}www-data{% endif %};
+# start processes according to the number of cores
+worker_processes                auto;
+
+error_log                       /var/log/nginx/error.log warn;
+pid                             /var/run/nginx.pid;
+
+events
+{
+    worker_connections          1024;
+}
+
+http
+{
+    include                     /etc/nginx/mime.types;
+    default_type                application/octet-stream;
+
+    map $remote_addr $remote_addr_ip_proto
+    {
+        default "IPv4";
+        ~: "IPv6";
+    }
+
+    log_format main '$time_local | '
+                    '$remote_addr_ip_proto | '
+                    '$server_protocol | '
+                    '$ssl_protocol | '
+                    '$ssl_cipher | '
+                    '$status | '
+                    '$remote_addr | '
+                    '$body_bytes_sent | '
+                    '$request_method "$scheme://$host$request_uri" | '
+                    '"$http_referer" | '
+                    '"$http_user_agent"';
+
+    access_log                  /var/log/nginx/access.log  main;
+
+    sendfile                    on;
+    #tcp_nopush                 on;
+    keepalive_timeout           65;
+    server_tokens              off;
+    types_hash_max_size       4096;
+    proxy_buffers 32 32k;
+    proxy_buffer_size 32k;
+
+    # speed up the traffic, we have enough CPU power
+    gzip                        on;
+
+    include dos.conf;
+    include /etc/nginx/conf.d-enabled/*.conf;
+}

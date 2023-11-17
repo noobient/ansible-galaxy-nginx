@@ -1,0 +1,6 @@
+; Allow httpd_t to serve requests at all
+(allow httpd_t http_port_t (tcp_socket (name_connect)))
+; Allow httpd_t to connect to MySQL
+(allow httpd_t mysqld_port_t (tcp_socket (name_connect)))
+; Allow httpd_t to proxy upstream servers
+(allow httpd_t http_cache_port_t (tcp_socket (name_connect)))

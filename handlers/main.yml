@@ -1,0 +1,4 @@
+---
+- name: Reload nginx # noqa no-changed-when
+  shell:
+    cmd: nginx -t && systemctl restart nginx.service

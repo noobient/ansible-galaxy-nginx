@@ -1,0 +1,14 @@
+geo $whitelist
+{
+   default 0;
+}
+
+map $whitelist $limit
+{
+    0 $binary_remote_addr;
+    1 "";
+}
+
+# 10m is enough for around 160k requests
+limit_req_zone $limit zone=one:20m rate=100r/m;
+limit_req zone=one burst=100 nodelay;

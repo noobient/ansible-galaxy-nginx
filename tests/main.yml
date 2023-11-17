@@ -1,0 +1,48 @@
+---
+- hosts: 127.0.0.1
+  tasks:
+    - include_role:
+        name: "{{ playbook_dir.split('/')[:-1] | last }}"
+      vars:
+        domain: foo1.com
+        ssl_disabled: true
+        mode: wordpress
+
+    - include_role:
+        name: "{{ playbook_dir.split('/')[:-1] | last }}"
+      vars:
+        domain: foo2.com
+        ssl_disabled: true
+        mode: static
+        path: /data/content/foo2.com
+        www_mode: serve
+
+    - include_role:
+        name: "{{ playbook_dir.split('/')[:-1] | last }}"
+      vars:
+        domain: foo3.com
+        ssl_disabled: true
+        mode: redirect
+        new_domain: bar.com
+
+    - name: Create cert directory
+      file:
+        path: /opt/acme
+        state: directory
+        owner: root
+        group: root
+        mode: '0700'
+
+    - name: Generate self-signed certificate # noqa no-changed-when
+      command:
+        cmd: openssl req -x509 -newkey rsa:4096 -keyout /opt/acme/foo.com.key -out /opt/acme/foo.com.cert -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=foo.com"
+
+    - include_role:
+        name: "{{ playbook_dir.split('/')[:-1] | last }}"
+      vars:
+        domain: foo.com
+        mode: proxy
+        ssl_key: /opt/acme/foo.com.key
+        ssl_cert: /opt/acme/foo.com.cert
+        host_port: 7777
+        proxy_port: 8888

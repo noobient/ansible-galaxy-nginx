@@ -1,0 +1,8 @@
+---
+- include_tasks: install.yml
+  when: noobient_nginx_installed is not defined
+
+- include_tasks: config.yml
+  when: noobient_nginx_configured is not defined
+
+- include_tasks: host.yml

@@ -1,0 +1,90 @@
+{% if mode == 'redirect' or eff_www_mode == 'redirect' %}
+server
+{
+{% if not eff_ssl_disabled | bool %}
+    listen {{ eff_host_port }} ssl http2;
+    listen [::]:{{ eff_host_port }} ssl http2;
+    include ssl.conf;
+    ssl_certificate {{ eff_ssl_cert }};
+    ssl_certificate_key {{ eff_ssl_key }};
+{% else %}
+    listen {{ eff_host_port }};
+    listen [::]:{{ eff_host_port }};
+{% endif %}
+
+{% if mode == 'redirect' %}
+    server_name {{ domain }} www.{{ domain }};
+    return 301 http{% if not eff_ssl_disabled | bool %}s{% endif %}://{{ new_domain }}$request_uri;
+{% else %}
+    server_name www.{{ domain }};
+    return 301 http{% if not eff_ssl_disabled | bool %}s{% endif %}://{{ domain }}$request_uri;
+{% endif %}
+}
+
+{% endif %}
+{% if mode == 'proxy' %}
+upstream appserver
+{
+    server 127.0.0.1:{{ eff_proxy_port }} fail_timeout=0;
+}
+
+{% endif %}
+{% if mode != 'redirect' %}
+server
+{
+{% if not eff_ssl_disabled | bool %}
+    listen {{ eff_host_port }} ssl http2;
+    listen [::]:{{ eff_host_port }} ssl http2;
+    include ssl.conf;
+    ssl_certificate {{ eff_ssl_cert }};
+    ssl_certificate_key {{ eff_ssl_key }};
+{% else %}
+    listen {{ eff_host_port }};
+    listen [::]:{{ eff_host_port }};
+{% endif %}
+
+    server_name {{ domain }}{% if eff_www_mode == 'serve' %} www.{{ domain }}{% endif %};
+    root {{ eff_path }};
+
+{% if mode == 'php' or mode == 'wordpress' %}
+    include php.conf;
+{% if mode == 'wordpress' %}
+    # wordpress-specific
+    if (!-e $request_filename) {
+        rewrite ^.*$ /index.php last;
+    }
+{% endif %}
+
+{% elif mode == 'proxy' %}
+    location /
+    {
+        proxy_read_timeout          3600;
+
+        # websocket proxy
+        proxy_http_version          1.1;
+        proxy_set_header            Upgrade $http_upgrade;
+        proxy_set_header            Connection "upgrade";
+
+        proxy_set_header            Host $host;
+        proxy_set_header            X-Real-IP $remote_addr;
+        proxy_set_header            X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header            X-Forwarded-Proto $scheme;
+        proxy_pass                  http://appserver;
+
+        proxy_max_temp_file_size    0;
+        client_body_buffer_size     64k;
+    }
+
+{% elif mode == 'static' %}
+    index index.html index.htm;
+
+{% elif mode == 'dirlist' %}
+    # yeah it's stupid, but there's no other way to disable
+    index WE_DONT_NEED_NO_INDEX;
+    autoindex on;
+
+{% endif %}
+    # this allows us to upload and download files without limiting their size
+    client_max_body_size 0;
+}
+{% endif %}
