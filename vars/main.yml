@@ -1,5 +1,7 @@
 ---
 nginx_root: /etc/nginx
+nginx_account: "{% if ansible_pkg_mgr == 'dnf' %}nginx{% else %}www-data{% endif %}"
+
 eff_www_mode: "{% if www_mode is defined and www_mode | length %}{{ www_mode }}{% else %}redirect{% endif %}"
 eff_path: "{% if path is defined and path | length %}{{ path }}{% else %}/var/www/html/{{ domain }}{% endif %}"
 eff_ssl_disabled: "{% if ssl_disabled is defined and ssl_disabled | string | length %}{{ ssl_disabled }}{% else %}false{% endif %}"

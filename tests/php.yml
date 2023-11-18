@@ -1,0 +1,55 @@
+---
+- include_role:
+    name: "{{ playbook_dir.split('/')[:-1] | last }}"
+  vars:
+    domain: foo0.com
+    ssl_disabled: true
+    mode: php
+
+# lineinfile fails for whatever reason
+- name: Redirect foo0.com requests to localhost # noqa no-changed-when
+  shell:
+    cmd: echo '127.0.0.1 foo0.com' >> /etc/hosts
+
+# for nginx_account
+- include_vars:
+    file: ../vars/main.yml
+
+- name: Create document root
+  file:
+    path: /var/www/html/foo0.com
+    state: directory
+    recurse: true
+    owner: "{{ nginx_account }}"
+    group: "{{ nginx_account }}"
+    mode: '0755'
+
+- name: Set up index with phpinfo() # noqa risky-file-permissions
+  copy:
+    dest: /var/www/html/foo0.com/index.php
+    content: |
+      <?php
+      phpinfo();
+      ?>
+
+# TODO On EL, cURL is installed by default. On top of that, on AlmaLinux 9, curl
+# is broken, and on Fedora, curl-minimal is broken. So just skip it altogether.
+# https://bugs.launchpad.net/tripleo/+bug/1953156
+- name: Install cURL
+  package:
+    name: curl
+    state: latest
+  register: installed_curl
+  when: installed_curl is not defined and ansible_os_family != 'RedHat'
+
+# gotta trigger manually, since nginx is only started via reload handler
+- meta: flush_handlers
+
+- name: Check phpinfo # noqa command-instead-of-module
+  shell:
+    cmd: curl --silent http://foo0.com | grep -A7 '>System <' | sed 's@ </td><td class="v">@{{ ":" }} @' | sed -e 's/<[^>]*>//g'
+  changed_when: false
+  register: curl_phpinfo_content
+
+- debug:
+    msg: "{{ curl_phpinfo_content.stdout_lines }}"

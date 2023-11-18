@@ -1,6 +1,8 @@
 ---
 - hosts: 127.0.0.1
   tasks:
+    - include_tasks: php.yml
+
     - include_role:
         name: "{{ playbook_dir.split('/')[:-1] | last }}"
       vars:

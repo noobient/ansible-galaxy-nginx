@@ -2,3 +2,8 @@
 - name: Reload nginx # noqa no-changed-when
   shell:
     cmd: nginx -t && systemctl restart nginx.service
+
+- name: Reload PHP
+  systemd_service:
+    name: "{{ noobient_nginx_php_unit }}"
+    state: restarted

@@ -1,0 +1,60 @@
+---
+- name: Install PHP
+  package:
+    name: php-fpm
+    state: latest
+
+# Ubuntu applies versioning to their PHP-FPM service names, because brain damage
+- name: Determine PHP-FPM unit name
+  shell:
+    cmd: "update-alternatives --query php | grep '^Best' | awk '{print $2}' | xargs basename | sed 's/php//'"
+  changed_when: false
+  register: noobient_nginx_php_check
+  when: ansible_pkg_mgr == 'apt'
+
+- set_fact:
+    noobient_nginx_php_ver: "{{ noobient_nginx_php_check.stdout_lines[0] }}"
+  when: ansible_pkg_mgr == 'apt'
+
+- set_fact:
+    noobient_nginx_php_unit: "php{% if ansible_pkg_mgr == 'apt' %}{{ noobient_nginx_php_ver }}{% endif %}-fpm.service"
+    noobient_nginx_php_ini: "{% if ansible_pkg_mgr == 'dnf' %}/etc/php.ini{% else %}/etc/php/{{ noobient_nginx_php_ver }}/fpm/php.ini{% endif %}"
+    noobient_nginx_fpm_conf: "{% if ansible_pkg_mgr == 'dnf' %}/etc/php-fpm.d/{% else %}/etc/php/{{ noobient_nginx_php_ver }}/fpm/pool.d/{% endif %}www.conf"
+    noobient_nginx_fpm_sock: "{% if ansible_pkg_mgr == 'dnf' %}/run/php-fpm/www.sock{% else %}/run/php/php{{ noobient_nginx_php_ver }}-fpm.sock{% endif %}"
+
+- name: Set PHP options
+  ini_file:
+    path: "{{ noobient_nginx_php_ini }}"
+    section: PHP
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    mode: '0644'
+    backup: true
+  loop:
+    - { option: 'post_max_size', value: '32M' }
+    - { option: 'upload_max_filesize', value: '32M' }
+  notify: Reload PHP
+
+- name: Set PHP-FPM options
+  ini_file:
+    path: "{{ noobient_nginx_fpm_conf }}"
+    section: www
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    mode: '0644'
+    backup: true
+  loop:
+    - { option: 'user', value: "{{ nginx_account }}" }
+    - { option: 'group', value: "{{ nginx_account }}" }
+    - { option: 'pm', value: 'ondemand' }
+    - { option: 'pm.process_idle_timeout', value: '10s' }
+    #- { option: 'pm.max_requests', value: '' }
+    #- { option: 'pm.max_children', value: '' }
+  notify: Reload PHP
+
+- name: Enable PHP service
+  systemd_service:
+    name: "{{ noobient_nginx_php_unit }}"
+    enabled: true
+    state: started
+  register: noobient_nginx_php_installed
