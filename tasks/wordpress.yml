@@ -12,6 +12,12 @@
       - php-json
       - php-mbstring
       - "php{% if ansible_pkg_mgr == 'apt' %}{{ noobient_nginx_php_ver }}{% endif %}-intl"
-      - "php{% if ansible_pkg_mgr == 'dnf' %}-pecl{% else %}{{ noobient_nginx_php_ver }}{% endif %}-imagick"
       - "php{% if ansible_pkg_mgr == 'dnf' %}-pecl{% else %}{{ noobient_nginx_php_ver }}{% endif %}-zip"
   register: noobient_nginx_wp_installed
+
+# Not available on EL8
+- name: Install ImageMagick PHP extension
+  package:
+    name: "php{% if ansible_pkg_mgr == 'dnf' %}-pecl{% else %}{{ noobient_nginx_php_ver }}{% endif %}-imagick"
+    state: latest
+  when: not (ansible_distribution_major_version == '8' and ansible_os_family == 'RedHat')
