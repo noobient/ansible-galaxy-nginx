@@ -4,6 +4,6 @@
     cmd: nginx -t && systemctl restart nginx.service
 
 - name: Reload PHP
-  systemd_service:
+  systemd:
     name: "{{ noobient_nginx_php_unit }}"
     state: restarted

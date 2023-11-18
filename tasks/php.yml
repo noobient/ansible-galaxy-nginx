@@ -53,7 +53,7 @@
   notify: Reload PHP
 
 - name: Enable PHP service
-  systemd_service:
+  systemd:
     name: "{{ noobient_nginx_php_unit }}"
     enabled: true
     state: started
