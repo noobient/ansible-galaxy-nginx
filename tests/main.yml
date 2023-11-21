@@ -48,3 +48,11 @@
         ssl_cert: /opt/acme/foo.com.cert
         host_port: 7777
         proxy_port: 8888
+
+    # Test batch mode and idempotency at the same time
+    - include_role:
+        name: "{{ playbook_dir.split('/')[:-1] | last }}"
+      vars:
+        nginx_batch:
+          - { domain: foo3.com, mode: redirect, new_domain: bar.com, ssl_disabled: 'true' }
+          - { domain: foo.com, mode: proxy, ssl_key: /opt/acme/foo.com.key, ssl_cert: /opt/acme/foo.com.cert, host_port: '7777', proxy_port: '8888' }

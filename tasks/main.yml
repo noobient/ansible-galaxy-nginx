@@ -1,14 +1,18 @@
 ---
-- include_tasks: wordpress.yml
-  when: (noobient_nginx_wp_installed is not defined) and (mode == 'wordpress')
+- include_tasks: main2.yml
+  vars:
+    domain: "{{ item.domain }}"
+    mode: "{{ item.mode }}"
+    path: "{{ item.path | default('') }}"
+    www_mode: "{{ item.www_mode | default('') }}"
+    new_domain: "{{ item.new_domain | default('') }}"
+    ssl_disabled: "{{ item.ssl_disabled | default('') }}"
+    ssl_key: "{{ item.ssl_key | default('') }}"
+    ssl_cert: "{{ item.ssl_cert | default('') }}"
+    host_port: "{{ item.host_port | default('') }}"
+    proxy_port: "{{ item.proxy_port | default('') }}"
+  loop: "{{ nginx_batch }}"
+  when: (nginx_batch is defined) and (nginx_batch.__class__.__name__ == 'list')
 
-- include_tasks: php.yml
-  when: (noobient_nginx_php_installed is not defined) and (mode == 'php' or mode == 'wordpress')
-
-- include_tasks: nginx.yml
-  when: noobient_nginx_installed is not defined
-
-- include_tasks: config.yml
-  when: noobient_nginx_configured is not defined
-
-- include_tasks: host.yml
+- include_tasks: main2.yml
+  when: (nginx_batch is not defined) or (nginx_batch.__class__.__name__ != 'list')

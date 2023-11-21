@@ -8,6 +8,7 @@ This role installs nginx and configures hosts.
 
 | Name | Required | Example | Description |
 |---|---|---|---|
+| `nginx_batch` | no | `<list>` | Supply the below parameters as a list, see examples. |
 | `domain` | yes | `foo.com` | Domain to host. |
 | `mode` | yes | `wordpress` | Hosting mode. Possible values are `dirlist`, `php`, `proxy`, `redirect`, `static`, `wordpress`. |
 | `path` | no | `/var/www/html/noobient.com` | Document root. Defaults to `/var/www/html/<domain>` for `php`, `static`, and `wordpress`, ignored otherwise. |
@@ -57,6 +58,14 @@ This role installs nginx and configures hosts.
     ssl_cert: /opt/acme/fullchain.pem
     host_port: 8888
     proxy_port: 9999
+
+# Batch mode
+- include_role:
+    name: noobient.nginx
+  vars:
+    nginx_batch:
+      - { domain: foo.com, mode: static, path: /data/content/foo.com }
+      - { domain: bar.com, mode: php, www_mode: serve }
 ```
 
 ## Return Values
