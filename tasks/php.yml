@@ -26,21 +26,23 @@
   ini_file:
     path: "{{ noobient_nginx_php_ini }}"
     section: PHP
-    option: "{{ item.option }}"
-    value: "{{ item.value }}"
+    option: "{{ noobient_nginx_php_opt.option }}"
+    value: "{{ noobient_nginx_php_opt.value }}"
     mode: '0644'
     backup: true
   loop:
     - { option: 'post_max_size', value: '32M' }
     - { option: 'upload_max_filesize', value: '32M' }
+  loop_control:
+    loop_var: noobient_nginx_php_opt
   notify: Reload PHP
 
 - name: Set PHP-FPM options
   ini_file:
     path: "{{ noobient_nginx_fpm_conf }}"
     section: www
-    option: "{{ item.option }}"
-    value: "{{ item.value }}"
+    option: "{{ noobient_nginx_phpfpm_opt.option }}"
+    value: "{{ noobient_nginx_phpfpm_opt.value }}"
     mode: '0644'
     backup: true
   loop:
@@ -50,6 +52,8 @@
     - { option: 'pm.process_idle_timeout', value: '10s' }
     #- { option: 'pm.max_requests', value: '' }
     #- { option: 'pm.max_children', value: '' }
+  loop_control:
+    loop_var: noobient_nginx_phpfpm_opt
   notify: Reload PHP
 
 - name: Enable PHP service
