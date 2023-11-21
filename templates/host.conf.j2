@@ -14,7 +14,7 @@ server
 
 {% if mode == 'redirect' %}
     server_name {{ domain }} www.{{ domain }};
-    return 301 http{% if not eff_ssl_disabled | bool %}s{% endif %}://{{ new_domain }}$request_uri;
+    return 301 http{% if not eff_ssl_disabled | bool %}s{% endif %}://{{ eff_new_domain }}$request_uri;
 {% else %}
     server_name www.{{ domain }};
     return 301 http{% if not eff_ssl_disabled | bool %}s{% endif %}://{{ domain }}$request_uri;
