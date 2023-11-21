@@ -66,7 +66,7 @@ This role installs nginx and configures hosts.
 
 Use in tasks is straightforward, just pass the same arguments as a list:
 
-```
+```yml
 - include_role:
     name: noobient.nginx
   vars:
@@ -77,7 +77,7 @@ Use in tasks is straightforward, just pass the same arguments as a list:
 
 Use via playbooks is also possible:
 
-```
+```yml
 # hosts
 [webservers]
 websrv1.contoso.com
@@ -109,7 +109,7 @@ name with `role: `. You can use any internal variable name you want, and define
 the passed variable wherever you see fit, e.g., `group_vars`, `host_vars`, etc.
 All you have to ensure is you pass it to the role as `nginx_batch`.
 
-```
+```yml
 # host_vars/websrv1.contoso.com.yml:
 random_variable_name:
   - { domain: foo1.com, mode: static, path: /data/content/foo1.com }
