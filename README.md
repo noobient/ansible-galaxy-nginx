@@ -22,6 +22,8 @@ This role installs nginx and configures hosts.
 
 ## Examples
 
+### Single Mode
+
 ```yml
 # Barebones
 - include_role:
@@ -58,14 +60,73 @@ This role installs nginx and configures hosts.
     ssl_cert: /opt/acme/fullchain.pem
     host_port: 8888
     proxy_port: 9999
+```
 
-# Batch mode
+### Batch Mode
+
+Use in tasks is straightforward, just pass the same arguments as a list:
+
+```
 - include_role:
     name: noobient.nginx
   vars:
     nginx_batch:
       - { domain: foo.com, mode: static, path: /data/content/foo.com }
       - { domain: bar.com, mode: php, www_mode: serve }
+```
+
+Use via playbooks is also possible:
+
+```
+# hosts
+[webservers]
+websrv1.contoso.com
+websrv2.contoso.com
+
+# host_vars/websrv1.contoso.com.yml:
+nginx_batch:
+  - { domain: foo1.com, mode: static, path: /data/content/foo1.com }
+  - { domain: bar1.com, mode: php, www_mode: serve }
+
+# host_vars/websrv2.contoso.com.yml:
+# Yes, a list can also contain just 1 element
+nginx_batch:
+  - { domain: bar2.com, mode: wordpress, host_port: 4567 }
+
+# webstuff.yml
+- hosts: webservers
+  become: yes
+  roles:
+    - your_own_role
+    - your_other_own_role
+    - noobient.nginx
+```
+
+For whatever reason, you might want to use a different variable name internally.
+In this case, simply map your variable in your playbook. Note that in Ansible,
+when you pass variables to roles in playbooks, you also need to prepend the role
+name with `role: `. You can use any internal variable name you want, and define
+the passed variable wherever you see fit, e.g., `group_vars`, `host_vars`, etc.
+All you have to ensure is you pass it to the role as `nginx_batch`.
+
+```
+# host_vars/websrv1.contoso.com.yml:
+random_variable_name:
+  - { domain: foo1.com, mode: static, path: /data/content/foo1.com }
+  - { domain: bar1.com, mode: php, www_mode: serve }
+
+# host_vars/websrv2.contoso.com.yml:
+random_variable_name:
+  - { domain: bar2.com, mode: wordpress, host_port: 4567 }
+
+# webstuff.yml
+- hosts: webservers
+  become: yes
+  roles:
+    - your_own_role
+    - your_other_own_role
+    - role: noobient.nginx
+      nginx_batch: "{{ random_variable_name }}"
 ```
 
 ## Return Values
