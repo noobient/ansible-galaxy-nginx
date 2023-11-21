@@ -1,4 +1,4 @@
-{% if eff_host_port | string not in stock_http_ports | string %}
+{% if ( (eff_host_port | string not in stock_http_ports | string) and (eff_host_port | string not in stock_http_cache_ports | string) ) %}
 ; let nginx listen on our custom port
 (portcon tcp {{ eff_host_port }} (system_u object_r http_port_t ((s0) (s0))))
 {% endif %}

@@ -1,4 +1,7 @@
 ---
+# nginx is allowed to listen both on http_port_t and http_cache_port_t,
+# so don't try to add a definition if host_port is on a cache port, it will
+# conflict with the existing port and fail
 - name: Check for SELinux port definition conflicts
   shell:
     cmd: "semanage port -l | grep ' tcp ' | grep -P ' {{ se_conflict_item }}(,| |$)' | awk '{print $1}'"
@@ -10,7 +13,7 @@
   loop_control:
     loop_var: se_conflict_item
   register: se_conflict_check
-  when: (eff_proxy_port | string not in stock_http_cache_ports | string) or (eff_host_port | string not in stock_http_ports | string)
+  when: (eff_proxy_port | string not in stock_http_cache_ports | string) or ((eff_host_port | string not in stock_http_ports | string) and (eff_host_port | string not in stock_http_cache_ports | string))
 
 - debug:
     msg: "{% if se_conflict_output.stdout | length and se_conflict_output.stdout != 'http_port_t' and se_conflict_output.stdout != 'http_cache_port_t' %}Warning: port {{ se_conflict_output.se_conflict_item }} seems to conflict with the definition of '{{ se_conflict_output.stdout }}', module installation will likely fail.{% else %}No SELinux port conflict detected.{% endif %}"
@@ -25,4 +28,4 @@
   vars:
     module: "noobient-nginx_{{ domain }}"
     custom_src: noobient-nginx_custom
-  when: (eff_proxy_port | string not in stock_http_cache_ports | string) or (eff_host_port | string not in stock_http_ports | string)
+  when: (eff_proxy_port | string not in stock_http_cache_ports | string) or ((eff_host_port | string not in stock_http_ports | string) and (eff_host_port | string not in stock_http_cache_ports | string))
