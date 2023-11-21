@@ -1,4 +1,10 @@
 ---
+- name: Update apt cache
+  apt:
+    update_cache: true
+  register: noobient_nginx_apt_updated
+  when: (ansible_pkg_mgr == 'apt') and (noobient_nginx_apt_updated is not defined)
+
 - include_tasks: wordpress.yml
   when: (noobient_nginx_wp_installed is not defined) and (mode == 'wordpress')
 
