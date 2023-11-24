@@ -11,6 +11,7 @@
       - php-mysqlnd
       - php-json
       - php-mbstring
+      - php-xml
       - "php{% if ansible_pkg_mgr == 'apt' %}{{ noobient_nginx_php_ver }}{% endif %}-intl"
       - "php{% if ansible_pkg_mgr == 'dnf' %}-pecl{% else %}{{ noobient_nginx_php_ver }}{% endif %}-zip"
   register: noobient_nginx_wp_installed
