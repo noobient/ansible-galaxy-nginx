@@ -10,17 +10,17 @@
     cmd: "update-alternatives --query php | grep '^Best' | awk '{print $2}' | xargs basename | sed 's/php//'"
   changed_when: false
   register: noobient_nginx_php_check
-  when: ansible_pkg_mgr == 'apt'
+  when: ansible_os_family == 'Debian'
 
 - set_fact:
     noobient_nginx_php_ver: "{{ noobient_nginx_php_check.stdout_lines[0] }}"
   when: ansible_pkg_mgr == 'apt'
 
 - set_fact:
-    noobient_nginx_php_unit: "php{% if ansible_pkg_mgr == 'apt' %}{{ noobient_nginx_php_ver }}{% endif %}-fpm.service"
-    noobient_nginx_php_ini: "{% if ansible_pkg_mgr == 'dnf' %}/etc/php.ini{% else %}/etc/php/{{ noobient_nginx_php_ver }}/fpm/php.ini{% endif %}"
-    noobient_nginx_fpm_conf: "{% if ansible_pkg_mgr == 'dnf' %}/etc/php-fpm.d/{% else %}/etc/php/{{ noobient_nginx_php_ver }}/fpm/pool.d/{% endif %}www.conf"
-    noobient_nginx_fpm_sock: "{% if ansible_pkg_mgr == 'dnf' %}{{ default_fpm_sock }}{% else %}/run/php/php{{ noobient_nginx_php_ver }}-fpm.sock{% endif %}"
+    noobient_nginx_php_unit: "php{% if ansible_os_family == 'Debian' %}{{ noobient_nginx_php_ver }}{% endif %}-fpm.service"
+    noobient_nginx_php_ini: "{% if ansible_os_family == 'RedHat' %}/etc/php.ini{% else %}/etc/php/{{ noobient_nginx_php_ver }}/fpm/php.ini{% endif %}"
+    noobient_nginx_fpm_conf: "{% if ansible_os_family == 'RedHat' %}/etc/php-fpm.d/{% else %}/etc/php/{{ noobient_nginx_php_ver }}/fpm/pool.d/{% endif %}www.conf"
+    noobient_nginx_fpm_sock: "{% if ansible_os_family == 'RedHat' %}{{ default_fpm_sock }}{% else %}/run/php/php{{ noobient_nginx_php_ver }}-fpm.sock{% endif %}"
 
 - name: Set PHP options
   ini_file:

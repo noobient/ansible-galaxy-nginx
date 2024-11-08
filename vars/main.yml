@@ -1,6 +1,6 @@
 ---
 nginx_root: /etc/nginx
-nginx_account: "{% if ansible_pkg_mgr == 'dnf' %}nginx{% else %}www-data{% endif %}"
+nginx_account: "{% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}"
 
 eff_path: "{% if path is defined and path | length %}{{ path }}{% else %}/var/www/html/{{ domain }}{% endif %}"
 eff_www_mode: "{% if www_mode is defined and www_mode | length %}{{ www_mode }}{% else %}redirect{% endif %}"

@@ -10,7 +10,7 @@
   notify: Reload nginx
 
 - include_tasks: selinux.yml
-  when: ansible_pkg_mgr == 'dnf'
+  when: ansible_os_family == 'RedHat'
 
 - name: "Enable {{ domain }} host"
   file:
