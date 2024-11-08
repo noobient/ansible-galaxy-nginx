@@ -9,7 +9,7 @@
       - openssl
 
 - name: Determine nginx version
-  shell:
+  command:
     cmd: nginx -v
   changed_when: false
   register: noobient_nginx_ng_check
