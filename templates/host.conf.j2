@@ -2,9 +2,11 @@
 server
 {
 {% if not eff_ssl_disabled | bool %}
-    listen {{ eff_host_port }} ssl;
-    listen [::]:{{ eff_host_port }} ssl;
+    listen {{ eff_host_port }} ssl{% if not noobient_nginx_http2_new_syntax | bool %} http2{% endif %};
+    listen [::]:{{ eff_host_port }} ssl{% if not noobient_nginx_http2_new_syntax | bool %} http2{% endif %};
+{% if noobient_nginx_http2_new_syntax | bool %}
     http2 on;
+{% endif %}
     include ssl.conf;
     ssl_certificate {{ eff_ssl_cert }};
     ssl_certificate_key {{ eff_ssl_key }};
@@ -34,9 +36,11 @@ upstream appserver
 server
 {
 {% if not eff_ssl_disabled | bool %}
-    listen {{ eff_host_port }} ssl;
-    listen [::]:{{ eff_host_port }} ssl;
+    listen {{ eff_host_port }} ssl{% if not noobient_nginx_http2_new_syntax | bool %} http2{% endif %};
+    listen [::]:{{ eff_host_port }} ssl{% if not noobient_nginx_http2_new_syntax | bool %} http2{% endif %};
+{% if noobient_nginx_http2_new_syntax | bool %}
     http2 on;
+{% endif %}
     include ssl.conf;
     ssl_certificate {{ eff_ssl_cert }};
     ssl_certificate_key {{ eff_ssl_key }};

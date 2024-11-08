@@ -8,6 +8,20 @@
       - nginx
       - openssl
 
+- name: Determine nginx version
+  shell:
+    cmd: nginx -v
+  changed_when: false
+  register: noobient_nginx_ng_check
+
+# Example output:
+# nginx version: nginx/1.26.2
+- set_fact:
+    noobient_nginx_ng_ver: "{{ noobient_nginx_ng_check.stderr_lines[0].split(':')[1].split('/')[1] }}"
+
+- set_fact:
+    noobient_nginx_http2_new_syntax: "{% if noobient_nginx_ng_ver is version('1.25.1', '>=') %}true{% else %}false{% endif %}"
+
 - name: Enable nginx service
   systemd:
     name: nginx.service
