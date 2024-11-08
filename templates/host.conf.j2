@@ -2,8 +2,9 @@
 server
 {
 {% if not eff_ssl_disabled | bool %}
-    listen {{ eff_host_port }} ssl http2;
-    listen [::]:{{ eff_host_port }} ssl http2;
+    listen {{ eff_host_port }} ssl;
+    listen [::]:{{ eff_host_port }} ssl;
+    http2 on;
     include ssl.conf;
     ssl_certificate {{ eff_ssl_cert }};
     ssl_certificate_key {{ eff_ssl_key }};
@@ -33,8 +34,9 @@ upstream appserver
 server
 {
 {% if not eff_ssl_disabled | bool %}
-    listen {{ eff_host_port }} ssl http2;
-    listen [::]:{{ eff_host_port }} ssl http2;
+    listen {{ eff_host_port }} ssl;
+    listen [::]:{{ eff_host_port }} ssl;
+    http2 on;
     include ssl.conf;
     ssl_certificate {{ eff_ssl_cert }};
     ssl_certificate_key {{ eff_ssl_key }};
