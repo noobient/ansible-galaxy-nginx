@@ -1,7 +1,6 @@
 {% if mode == 'redirect' or eff_www_mode == 'redirect' %}
 server
 {
-{% if not eff_ssl_disabled | bool %}
     listen {{ eff_host_port }} ssl{% if not noobient_nginx_http2_new_syntax | bool %} http2{% endif %};
     listen [::]:{{ eff_host_port }} ssl{% if not noobient_nginx_http2_new_syntax | bool %} http2{% endif %};
 {% if noobient_nginx_http2_new_syntax | bool %}
@@ -10,17 +9,13 @@ server
     include ssl.conf;
     ssl_certificate {{ eff_ssl_cert }};
     ssl_certificate_key {{ eff_ssl_key }};
-{% else %}
-    listen {{ eff_host_port }};
-    listen [::]:{{ eff_host_port }};
-{% endif %}
 
 {% if mode == 'redirect' %}
     server_name {{ domain }} www.{{ domain }};
-    return 301 http{% if not eff_ssl_disabled | bool %}s{% endif %}://{{ eff_new_domain }}$request_uri;
+    return 301 https://{{ eff_new_domain }}$request_uri;
 {% else %}
     server_name www.{{ domain }};
-    return 301 http{% if not eff_ssl_disabled | bool %}s{% endif %}://{{ domain }}$request_uri;
+    return 301 https://{{ domain }}$request_uri;
 {% endif %}
 }
 
@@ -35,7 +30,6 @@ upstream appserver
 {% if mode != 'redirect' %}
 server
 {
-{% if not eff_ssl_disabled | bool %}
     listen {{ eff_host_port }} ssl{% if not noobient_nginx_http2_new_syntax | bool %} http2{% endif %};
     listen [::]:{{ eff_host_port }} ssl{% if not noobient_nginx_http2_new_syntax | bool %} http2{% endif %};
 {% if noobient_nginx_http2_new_syntax | bool %}
@@ -44,10 +38,6 @@ server
     include ssl.conf;
     ssl_certificate {{ eff_ssl_cert }};
     ssl_certificate_key {{ eff_ssl_key }};
-{% else %}
-    listen {{ eff_host_port }};
-    listen [::]:{{ eff_host_port }};
-{% endif %}
 
     server_name {{ domain }}{% if eff_www_mode == 'serve' %} www.{{ domain }}{% endif %};
     root {{ eff_path }};

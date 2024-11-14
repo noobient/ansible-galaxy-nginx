@@ -11,6 +11,9 @@
 - include_tasks: nginx.yml
   when: noobient_nginx_installed is not defined
 
+- include_tasks: cert.yml
+  when: eff_ssl_selfsigned | bool
+
 - include_tasks: config.yml
   when: noobient_nginx_configured is not defined
 

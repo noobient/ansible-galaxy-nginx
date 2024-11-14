@@ -3,13 +3,8 @@
     name: "{{ playbook_dir.split('/')[:-1] | last }}"
   vars:
     domain: foo0.com
-    ssl_disabled: true
+    ssl_selfsigned: true
     mode: php
-
-# lineinfile fails for whatever reason
-- name: Redirect foo0.com requests to localhost # noqa no-changed-when
-  shell:
-    cmd: echo '127.0.0.1 foo0.com' >> /etc/hosts
 
 # for nginx_account
 - include_vars:
@@ -47,7 +42,7 @@
 
 - name: Check phpinfo # noqa command-instead-of-module
   shell:
-    cmd: curl --silent http://foo0.com | grep -A7 '>System <' | sed 's@ </td><td class="v">@{{ ":" }} @' | sed -e 's/<[^>]*>//g'
+    cmd: curl --silent --resolve 'foo0.com:443:127.0.0.1' --insecure https://foo0.com | grep -A7 '>System <' | sed 's@ </td><td class="v">@{{ ":" }} @' | sed -e 's/<[^>]*>//g'
   changed_when: false
   register: curl_phpinfo_content
 

@@ -3,14 +3,14 @@
     name: "{{ playbook_dir.split('/')[:-1] | last }}"
   vars:
     domain: foo1.com
-    ssl_disabled: true
+    ssl_selfsigned: true
     mode: wordpress
 
 - include_role:
     name: "{{ playbook_dir.split('/')[:-1] | last }}"
   vars:
     domain: foo2.com
-    ssl_disabled: true
+    ssl_selfsigned: true
     mode: static
     path: /data/content/foo2.com
     www_mode: serve
@@ -19,7 +19,7 @@
     name: "{{ playbook_dir.split('/')[:-1] | last }}"
   vars:
     domain: foo3.com
-    ssl_disabled: true
+    ssl_selfsigned: true
     mode: redirect
     new_domain: bar.com
 
@@ -28,7 +28,8 @@
   vars:
     domain: foo.com
     mode: proxy
-    ssl_key: /opt/acme/foo.com.key
-    ssl_cert: /opt/acme/foo.com.cert
+    ssl_selfsigned: true
+    ssl_key: /random/foo.com.key
+    ssl_cert: /random/foo.com.cert
     host_port: 7777
     proxy_port: 8888

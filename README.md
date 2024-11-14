@@ -14,10 +14,10 @@ This role installs nginx and configures hosts.
 | `path` | no | `/var/www/html/noobient.com` | Document root. Defaults to `/var/www/html/<domain>` for `php`, `static`, and `wordpress`, ignored otherwise. |
 | `www_mode` | no | `redirect` | Possible values are `redirect` and `serve`, to redirect `www.<domain>` requests to `<domain>` or serve them as is, respectively. Defaults to `redirect`. Ignored when `mode` is set to `redirect`. |
 | `new_domain` | no | `foobar.com` | New domain to redirect to. Mandatory for `redirect`, ignored otherwise. |
-| `ssl_disabled` | no | `true` | `true` or `false`. Defaults to `false`. |
-| `ssl_key` | no | `/etc/acme/noobient.com/noobient.com.key` | Full path to SSL key file. Defaults to `/etc/acme/<domain>/<domain>.key`. Ignored if `ssl_disabled` is `true`. |
-| `ssl_cert` | no | `/etc/acme/noobient.com/fullchain.cer` | Full path to SSL full chain file. Defaults to `/etc/acme/<domain>/fulllchain.cer`. Ignored if `ssl_disabled` is `true`. |
-| `host_port` | no | `8888` | Listen on custom port. Defaults to `80` when `ssl_disabled` is `true`, or `443` otherwise. |
+| `ssl_selfsigned` | no | `true` | `true` or `false`. If `true`, generates a self-signed certificate with 1 year validity. Defaults to `false`. |
+| `ssl_key` | no | `/etc/acme/noobient.com/noobient.com.key` | Full path to SSL key file. Defaults to `/etc/acme/<domain>/<domain>.key`. Ignored if `ssl_selfsigned` is `true`. |
+| `ssl_cert` | no | `/etc/acme/noobient.com/fullchain.cer` | Full path to SSL full chain file. Defaults to `/etc/acme/<domain>/fulllchain.cer`. Ignored if `ssl_selfsigned` is `true`. |
+| `host_port` | no | `8888` | Listen on custom port. Defaults to `443`. |
 | `proxy_port` | no | `9999` | Port of the app being proxied, when `mode` is set to `proxy`, ignored otherwise. Defaults to `8080`. |
 
 ## Examples
@@ -48,7 +48,7 @@ This role installs nginx and configures hosts.
     domain: foo.com
     mode: redirect
     new_domain: bar.com
-    ssl_disabled: true
+    ssl_selfsigned: true
 
 # Proxy the app running on port 9999, use custom SSL paths, and serve on port 8888
 - include_role:

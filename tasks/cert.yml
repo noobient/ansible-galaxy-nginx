@@ -1,0 +1,17 @@
+---
+- name: Create self-signed cert directory
+  file:
+    path: "{{ selfsigned_root }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+# 'creates' doesn't support multiple items and glob pattern doesn't seem to work.
+# So we either ignore one file or always regenerate. In the latter case, either
+# always change or never. So just pick our poison and hope that if the cert
+# exists, then so does the key. You shouldn't use self-signed certs anyway keke
+- name: Generate self-signed certificate
+  command:
+    cmd: openssl req -x509 -newkey rsa:4096 -keyout "{{ selfsigned_root }}/{{ domain }}.key" -out "{{ selfsigned_root }}/{{ domain }}.cert" -sha256 -days 365 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN={{ domain }}"
+    creates: "{{ selfsigned_root }}/{{ domain }}.cert"

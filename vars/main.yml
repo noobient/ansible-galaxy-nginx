@@ -2,12 +2,14 @@
 nginx_root: /etc/nginx
 nginx_account: "{% if ansible_os_family == 'RedHat' %}nginx{% else %}www-data{% endif %}"
 
+selfsigned_root: "/etc/{% if ansible_os_family == 'RedHat' %}pki/tls{% else %}ssl{% endif %}/private/{{ domain }}"
+
 eff_path: "{% if path is defined and path | length %}{{ path }}{% else %}/var/www/html/{{ domain }}{% endif %}"
 eff_www_mode: "{% if www_mode is defined and www_mode | length %}{{ www_mode }}{% else %}redirect{% endif %}"
-eff_ssl_disabled: "{% if ssl_disabled is defined and ssl_disabled | string | length %}{{ ssl_disabled }}{% else %}false{% endif %}"
-eff_ssl_key: "{% if ssl_key is defined and ssl_key | length %}{{ ssl_key }}{% else %}/etc/acme/{{ domain }}/{{ domain }}.key{% endif %}"
-eff_ssl_cert: "{% if ssl_cert is defined and ssl_cert | length %}{{ ssl_cert }}{% else %}/etc/acme/{{ domain }}/fullchain.cer{% endif %}"
-eff_host_port: "{% if host_port is defined and host_port | string | length %}{{ host_port }}{% elif not eff_ssl_disabled | bool %}443{% else %}80{% endif %}"
+eff_ssl_selfsigned: "{% if ssl_selfsigned is defined and ssl_selfsigned | string | length %}{{ ssl_selfsigned }}{% else %}false{% endif %}"
+eff_ssl_key: "{% if eff_ssl_selfsigned | bool %}{{ selfsigned_root }}/{{ domain }}.key{% else %}{% if ssl_key is defined and ssl_key | length %}{{ ssl_key }}{% else %}/etc/acme/{{ domain }}/{{ domain }}.key{% endif %}{% endif %}"
+eff_ssl_cert: "{% if eff_ssl_selfsigned | bool %}{{ selfsigned_root }}/{{ domain }}.cert{% else %}{% if ssl_cert is defined and ssl_cert | length %}{{ ssl_cert }}{% else %}/etc/acme/{{ domain }}/fullchain.cer{% endif %}{% endif %}"
+eff_host_port: "{% if host_port is defined and host_port | string | length %}{{ host_port }}{% else %}443{% endif %}"
 eff_proxy_port: "{% if proxy_port is defined and proxy_port | string | length %}{{ proxy_port }}{% else %}8080{% endif %}"
 eff_new_domain: "{{ new_domain | default('') }}"
 

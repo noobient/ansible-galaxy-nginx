@@ -5,7 +5,7 @@
     mode: "{{ item.mode }}"
     path: "{{ item.path | default('') }}"
     www_mode: "{{ item.www_mode | default('') }}"
-    ssl_disabled: "{{ item.ssl_disabled | default('') }}"
+    ssl_selfsigned: "{{ item.ssl_selfsigned | default('') }}"
     ssl_key: "{{ item.ssl_key | default('') }}"
     ssl_cert: "{{ item.ssl_cert | default('') }}"
     host_port: "{{ item.host_port | default('') }}"
