@@ -54,12 +54,6 @@ server
 
 {% if mode == 'php' or mode == 'wordpress' %}
     include php.conf;
-{% if mode == 'wordpress' %}
-    # wordpress-specific
-    if (!-e $request_filename) {
-        rewrite ^.*$ /index.php last;
-    }
-{% endif %}
 
 {% elif mode == 'proxy' %}
     location /
