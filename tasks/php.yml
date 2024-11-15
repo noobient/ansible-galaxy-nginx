@@ -14,7 +14,7 @@
 
 - set_fact:
     noobient_nginx_php_ver: "{{ noobient_nginx_php_check.stdout_lines[0] }}"
-  when: ansible_pkg_mgr == 'apt'
+  when: ansible_os_family == 'Debian'
 
 - set_fact:
     noobient_nginx_php_unit: "php{% if ansible_os_family == 'Debian' %}{{ noobient_nginx_php_ver }}{% endif %}-fpm.service"
