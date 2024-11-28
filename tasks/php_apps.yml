@@ -54,12 +54,12 @@
   failed_when: noobient_nginx_sodium_install.rc != 0 and noobient_nginx_sodium_install.rc != 1
   when: mode == 'moodle' and noobient_nginx_sodium_install is not defined
 
-# Not available on EL8
+# Apparently not available/working on EL8/EL9 rn
 - name: Install ImageMagick PHP extension
   package:
     name: "php{% if ansible_os_family == 'RedHat' %}-pecl{% else %}{{ noobient_nginx_php_ver }}{% endif %}-imagick"
     state: latest
-  when: not (ansible_distribution_major_version == '8' and ansible_os_family == 'RedHat')
+  when: ansible_distribution == 'Fedora' or ansible_os_family == 'Debian'
 
 - name: Set PHP options for Moodle
   ini_file:
