@@ -15,6 +15,9 @@ eff_new_domain: "{{ new_domain | default('') }}"
 
 default_fpm_sock: /run/php-fpm/www.sock
 
+noobient_nginx_moodle_php_ver: '8.2'
+noobient_nginx_sodium_installed_str: 'pecl/libsodium is already installed and is the same as the released version'
+
 # Check with:
 # semanage port -l | grep '^http_port_t '
 # semanage port -l | grep '^http_cache_port_t '

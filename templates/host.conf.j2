@@ -42,7 +42,7 @@ server
     server_name {{ domain }}{% if eff_www_mode == 'serve' %} www.{{ domain }}{% endif %};
     root {{ eff_path }};
 
-{% if mode == 'php' or mode == 'wordpress' %}
+{% if mode == 'php' or mode == 'wordpress' or mode == 'moodle' %}
     include php.conf;
 
 {% elif mode == 'proxy' %}

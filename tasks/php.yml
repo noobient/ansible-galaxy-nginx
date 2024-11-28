@@ -1,5 +1,12 @@
 ---
-- name: Install PHP
+- name: "Enable PHP {{ noobient_nginx_moodle_php_ver }} stream"
+  command:
+    cmd: "dnf -y module switch-to php:{{ noobient_nginx_moodle_php_ver }}"
+  register: noobient_nginx_php_switchto
+  changed_when: ('Nothing to do' not in noobient_nginx_php_switchto.stdout)
+  when: ansible_os_family == 'RedHat' and ansible_distribution != 'Fedora' and mode == 'moodle'
+
+- name: Install PHP-FPM
   package:
     name: php-fpm
     state: latest

@@ -1,0 +1,8 @@
+---
+# Test batch mode and idempotency at the same time
+- include_role:
+    name: "{{ playbook_dir.split('/')[:-1] | last }}"
+  vars:
+    nginx_batch:
+      - { domain: foo3.com, mode: redirect, new_domain: bar.com, ssl_selfsigned: true }
+      - { domain: foo.com, mode: proxy, ssl_selfsigned: 'true', host_port: '7777', proxy_port: '8888' }

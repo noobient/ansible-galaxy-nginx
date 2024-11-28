@@ -4,7 +4,8 @@
   vars:
     domain: foo1.com
     ssl_selfsigned: true
-    mode: wordpress
+    host_port: 8443
+    mode: moodle
 
 - include_role:
     name: "{{ playbook_dir.split('/')[:-1] | last }}"

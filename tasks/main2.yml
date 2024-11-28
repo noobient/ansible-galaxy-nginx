@@ -2,11 +2,12 @@
 - include_tasks: apt_cache.yml
   when: ansible_os_family == 'Debian' and noobient_apt_cache_updated is not defined
 
-- include_tasks: wordpress.yml
-  when: (noobient_nginx_wp_installed is not defined) and (mode == 'wordpress')
-
+# Gotta have this before WP for PHP version
 - include_tasks: php.yml
-  when: (noobient_nginx_php_installed is not defined) and (mode == 'php' or mode == 'wordpress')
+  when: (noobient_nginx_php_installed is not defined) and (mode == 'php' or mode == 'wordpress' or mode == 'moodle')
+
+- include_tasks: php_apps.yml
+  when: (noobient_nginx_phpapps_installed is not defined) and (mode == 'wordpress' or mode == 'moodle')
 
 - include_tasks: nginx.yml
   when: noobient_nginx_installed is not defined
