@@ -37,9 +37,9 @@
     state: latest
   vars:
     packages:
-      - php-devel
-      - libsodium
-      - libsodium-devel
+      - "php-dev{% if ansible_os_family == 'RedHat' %}el{% endif %}"
+      - "libsodium{% if ansible_os_family == 'Debian' %}23{% endif %}"
+      - "libsodium-dev{% if ansible_os_family == 'RedHat' %}el{% endif %}"
       - php-pgsql
       - php-soap
       - php-pear
