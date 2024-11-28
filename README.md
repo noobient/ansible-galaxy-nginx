@@ -10,7 +10,7 @@ This role installs nginx and configures hosts.
 |---|---|---|---|
 | `nginx_batch` | no | `<list>` | Supply the below parameters as a list, see examples. |
 | `domain` | yes | `foo.com` | Domain to host. |
-| `mode` | yes | `wordpress` | Hosting mode. Possible values are `dirlist`, `php`, `proxy`, `redirect`, `static`, `wordpress`. |
+| `mode` | yes | `wordpress` | Hosting mode. Possible values are `dirlist`, `moodle`, `php`, `proxy`, `redirect`, `static`, `wordpress`. |
 | `path` | no | `/var/www/html/noobient.com` | Document root. Defaults to `/var/www/html/<domain>` for `php`, `static`, and `wordpress`, ignored otherwise. |
 | `www_mode` | no | `redirect` | Possible values are `redirect` and `serve`, to redirect `www.<domain>` requests to `<domain>` or serve them as is, respectively. Defaults to `redirect`. Ignored when `mode` is set to `redirect`. |
 | `new_domain` | no | `foobar.com` | New domain to redirect to. Mandatory for `redirect`, ignored otherwise. |
