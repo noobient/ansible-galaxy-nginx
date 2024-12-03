@@ -1,0 +1,5 @@
+# wordpress-specific
+if (!-e $request_filename)
+{
+    rewrite ^.*$ /index.php last;
+}

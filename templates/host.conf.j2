@@ -43,7 +43,10 @@ server
     root {{ eff_path }};
 
 {% if mode == 'php' or mode == 'wordpress' or mode == 'moodle' %}
-    include php.conf;
+    include php-common.conf;
+{% if mode == 'wordpress' %}
+    include php-wordpress.conf;
+{% endif %}
 
 {% elif mode == 'proxy' %}
     location /

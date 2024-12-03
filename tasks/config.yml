@@ -17,7 +17,8 @@
   loop:
     - dos.conf
     - nginx.conf
-    - php.conf
+    - php-common.conf
+    - php-wordpress.conf
     - ssl.conf
   loop_control:
     loop_var: ng_conf_item
