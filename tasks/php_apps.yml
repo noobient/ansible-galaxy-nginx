@@ -43,6 +43,7 @@
       - php-pgsql
       - php-soap
       - php-pear
+      - php-ldap
   register: noobient_nginx_moodle_installed
   when: mode == 'moodle' and noobient_nginx_moodle_installed is not defined
 
