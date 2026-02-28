@@ -1,6 +1,6 @@
 ---
 - include_tasks: apt_cache.yml
-  when: ansible_os_family == 'Debian' and noobient_apt_cache_updated is not defined
+  when: ansible_facts['os_family'] == 'Debian' and noobient_apt_cache_updated is not defined
 
 # Gotta have this before WP for PHP version
 - include_tasks: php.yml

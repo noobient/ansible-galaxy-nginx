@@ -12,7 +12,7 @@
     proxy_port: "{{ item.proxy_port | default('') }}"
     new_domain: "{{ item.new_domain | default('') }}"
   loop: "{{ nginx_batch }}"
-  when: (nginx_batch is defined) and (nginx_batch.__class__.__name__ == 'list')
+  when: (nginx_batch is defined) and (nginx_batch | type_debug == 'list')
 
 - include_tasks: main2.yml
-  when: (nginx_batch is not defined) or (nginx_batch.__class__.__name__ != 'list')
+  when: (nginx_batch is not defined) or (nginx_batch | type_debug != 'list')

@@ -3,7 +3,7 @@
   package:
     name: epel-release
     state: latest
-  when: ansible_os_family == 'RedHat' and ansible_distribution != 'Fedora' and mode == 'moodle'
+  when: ansible_facts['os_family'] == 'RedHat' and ansible_facts['distribution'] != 'Fedora' and mode == 'moodle'
 
 - name: Install packages common for WordPress / Moodle
   package:
@@ -16,8 +16,8 @@
       - php-opcache
       - php-mbstring
       - php-xml
-      - "php{% if ansible_os_family == 'Debian' %}{{ noobient_nginx_php_ver }}{% endif %}-intl"
-      - "php{% if ansible_os_family == 'RedHat' %}-pecl{% else %}{{ noobient_nginx_php_ver }}{% endif %}-zip"
+      - "php{% if ansible_facts['os_family'] == 'Debian' %}{{ noobient_nginx_php_ver }}{% endif %}-intl"
+      - "php{% if ansible_facts['os_family'] == 'RedHat' %}-pecl{% else %}{{ noobient_nginx_php_ver }}{% endif %}-zip"
   register: noobient_nginx_phpapps_installed
 
 - name: Install packages for WordPress
@@ -37,9 +37,9 @@
     state: latest
   vars:
     packages:
-      - "php-dev{% if ansible_os_family == 'RedHat' %}el{% endif %}"
-      - "libsodium{% if ansible_os_family == 'Debian' %}23{% endif %}"
-      - "libsodium-dev{% if ansible_os_family == 'RedHat' %}el{% endif %}"
+      - "php-dev{% if ansible_facts['os_family'] == 'RedHat' %}el{% endif %}"
+      - "libsodium{% if ansible_facts['os_family'] == 'Debian' %}23{% endif %}"
+      - "libsodium-dev{% if ansible_facts['os_family'] == 'RedHat' %}el{% endif %}"
       - php-pgsql
       - php-soap
       - php-pear
@@ -58,9 +58,9 @@
 # Apparently not available/working on EL8/EL9 rn
 - name: Install ImageMagick PHP extension
   package:
-    name: "php{% if ansible_os_family == 'RedHat' %}-pecl{% else %}{{ noobient_nginx_php_ver }}{% endif %}-imagick"
+    name: "php{% if ansible_facts['os_family'] == 'RedHat' %}-pecl{% else %}{{ noobient_nginx_php_ver }}{% endif %}-imagick"
     state: latest
-  when: ansible_distribution == 'Fedora' or ansible_os_family == 'Debian'
+  when: ansible_facts['distribution'] == 'Fedora' or ansible_facts['os_family'] == 'Debian'
 
 - name: Set PHP options for Moodle
   ini_file:
