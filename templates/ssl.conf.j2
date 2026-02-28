@@ -8,11 +8,6 @@ ssl_ciphers ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305;
 
 ssl_dhparam dh4096.pem;
 
-ssl_stapling on;
-ssl_stapling_verify on;
-resolver 1.1.1.1 1.0.0.1 [2606:4700:4700::1111] [2606:4700:4700::1001] valid=300s;
-resolver_timeout 30s;
-
 # make sure we don't send duplicate headers
 proxy_hide_header Strict-Transport-Securty;
 proxy_hide_header X-Content-Type-Options;
@@ -25,6 +20,6 @@ proxy_hide_header X-Frame-Options;
 add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload";
 add_header X-Content-Type-Options "nosniff";
 add_header X-XSS-Protection "1; mode=block";
-add_header Content-Security-Policy "default-src https: 'unsafe-inline' 'unsafe-eval'; connect-src https: wss:; img-src data: https://*; frame-src 'self' blob:; font-src data: https:";
+add_header Content-Security-Policy "default-src https: 'unsafe-inline' 'unsafe-eval'; connect-src https: wss:; img-src data: https://*; frame-src 'self' blob:; font-src data: https:; worker-src blob:";
 add_header Referrer-Policy "strict-origin-when-cross-origin";
 add_header X-Frame-Options "SAMEORIGIN";
