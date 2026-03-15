@@ -20,6 +20,8 @@ proxy_hide_header X-Frame-Options;
 add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload";
 add_header X-Content-Type-Options "nosniff";
 add_header X-XSS-Protection "1; mode=block";
-add_header Content-Security-Policy "default-src https: 'unsafe-inline' 'unsafe-eval'; connect-src https: wss:; img-src data: https://*; frame-src 'self' blob:; font-src data: https:; worker-src blob:";
+# worker-src blob: is required for plugins that have a file browser like WebP converter plugins
+# frame-src https: is required for plugins like Cloudflare Turnstile
+add_header Content-Security-Policy "default-src https: 'unsafe-inline' 'unsafe-eval'; connect-src https: wss:; img-src data: https://*; frame-src 'self' blob: https:; font-src data: https:; worker-src blob:";
 add_header Referrer-Policy "strict-origin-when-cross-origin";
 add_header X-Frame-Options "SAMEORIGIN";
