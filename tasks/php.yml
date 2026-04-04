@@ -15,14 +15,15 @@
 # Ubuntu applies versioning to their PHP-FPM service names, because brain damage
 - name: Determine PHP-FPM unit name
   shell:
-    cmd: "update-alternatives --query php | grep '^Best' | awk '{print $2}' | xargs basename | sed 's/php//'"
+    cmd: "{% if ansible_facts['os_family'] == 'Debian' %}update-alternatives --query php | grep '^Best' | awk '{print $2}' | xargs basename | sed 's/php//'{% else %}php-fpm -v | grep '^PHP' | awk '{print $2}' | awk -F'.' '{print $1\".\"$2}'{% endif %}"
   changed_when: false
   register: noobient_nginx_php_check
-  when: ansible_facts['os_family'] == 'Debian'
 
 - set_fact:
     noobient_nginx_php_ver: "{{ noobient_nginx_php_check.stdout_lines[0] }}"
-  when: ansible_facts['os_family'] == 'Debian'
+
+- debug:
+    msg: "PHP version is: {{ noobient_nginx_php_ver }}"
 
 - set_fact:
     noobient_nginx_php_unit: "php{% if ansible_facts['os_family'] == 'Debian' %}{{ noobient_nginx_php_ver }}{% endif %}-fpm.service"

@@ -13,12 +13,18 @@
     packages:
       - php-pdo
       - php-gd
-      - php-opcache
       - php-mbstring
       - php-xml
       - "php{% if ansible_facts['os_family'] == 'Debian' %}{{ noobient_nginx_php_ver }}{% endif %}-intl"
       - "php{% if ansible_facts['os_family'] == 'RedHat' %}-pecl{% else %}{{ noobient_nginx_php_ver }}{% endif %}-zip"
   register: noobient_nginx_phpapps_installed
+
+# OPcache has been moved to core in PHP 8.5, separate packages don't exist anymore
+- name: Install OPcache
+  package:
+    name: php-opcache
+    state: latest
+  when: noobient_nginx_php_ver is version('8.5', '<')
 
 - name: Install packages for WordPress
   package:
